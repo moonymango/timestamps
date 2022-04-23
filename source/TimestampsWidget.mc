@@ -22,45 +22,6 @@ function formatDate(mt as Time.Moment) as String {
 }
 
 
-// menu to show all stored timestamps using menu2
-class TimestampList extends WatchUi.Menu2 {
-
-    public static var listValid as Boolean = true;
-
-    public function initialize() {
-        Menu2.initialize({:title=>"Timestamps"});
-
-        // create menu items based on stored timestamp
-        var lst = Storage.getValue("timestamps");
-
-        if ((lst == null) || (lst.size() == 0)) {
-            // list empty -> just create a dummy entry (note: item id must not be a valid list index to differentiate from real entries)
-            self.addItem(new WatchUi.MenuItem( "no entries", "", "dummy", null) );
-        } else {
-            // create one menu item for each timestamp
-            for( var i = 0; i < lst.size(); i++ ) {
-                var idx = lst.size()-1-i;    // show list in reversed order (newest timestamp first)
-                var mt = new Time.Moment(lst[idx][0]);
-                var color = lst[idx][1];
-
-                // use index of timestamp entry as menu item id -> to be used later when user selects a menu item to delete the timestamp
-                self.addItem(new WatchUi.IconMenuItem( $.formatTime(mt), $.formatDate(mt), idx, new $.Fill(color), null) );   
-            }
-        }
-    }
-
-    function onShow() as Void {
-        Menu2.onShow();
-
-        // if list is not valid anymore -> recreate
-        if (!listValid) {
-            listValid = true;
-            WatchUi.switchToView(new $.TimestampList(), new $.TimestampListSelectionDelegate(), WatchUi.SLIDE_IMMEDIATE);
-        }
-    }
-}
-
-
 class TimestampsWidget extends Application.AppBase {
     var now as Time.Moment;  // next timestamp to create
 
@@ -168,6 +129,46 @@ class CategorySelectionDelegate extends WatchUi.Menu2InputDelegate {
         WatchUi.switchToView(new $.TimestampList(), new TimestampListSelectionDelegate(), WatchUi.SLIDE_UP);
     }
 }
+
+
+// menu to show all stored timestamps using menu2
+class TimestampList extends WatchUi.Menu2 {
+
+    public static var listValid as Boolean = true;
+
+    public function initialize() {
+        Menu2.initialize({:title=>"Timestamps"});
+
+        // create menu items based on stored timestamp
+        var lst = Storage.getValue("timestamps");
+
+        if ((lst == null) || (lst.size() == 0)) {
+            // list empty -> just create a dummy entry (note: item id must not be a valid list index to differentiate from real entries)
+            self.addItem(new WatchUi.MenuItem( "no entries", "", "dummy", null) );
+        } else {
+            // create one menu item for each timestamp
+            for( var i = 0; i < lst.size(); i++ ) {
+                var idx = lst.size()-1-i;    // show list in reversed order (newest timestamp first)
+                var mt = new Time.Moment(lst[idx][0]);
+                var color = lst[idx][1];
+
+                // use index of timestamp entry as menu item id -> to be used later when user selects a menu item to delete the timestamp
+                self.addItem(new WatchUi.IconMenuItem( $.formatTime(mt), $.formatDate(mt), idx, new $.Fill(color), null) );   
+            }
+        }
+    }
+
+    function onShow() as Void {
+        Menu2.onShow();
+
+        // if list is not valid anymore -> recreate
+        if (!listValid) {
+            listValid = true;
+            WatchUi.switchToView(new $.TimestampList(), new $.TimestampListSelectionDelegate(), WatchUi.SLIDE_IMMEDIATE);
+        }
+    }
+}
+
 
 class TimestampListSelectionDelegate extends WatchUi.Menu2InputDelegate {
 
