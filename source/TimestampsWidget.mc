@@ -56,10 +56,12 @@ class StartScreen extends WatchUi.View {
         // show timestamp which can be added to timestamp list next
         var app = Application.getApp();
         app.now = Time.now();
-        var timeString = "Set?\n" + $.formatTime(app.now) + "\n" + $.formatDate(app.now);
+        var timeString = $.formatTime(app.now) + "\n" + $.formatDate(app.now);
 
         var view = View.findDrawableById("TimeLabel") as Text; 
         view.setText(timeString);
+        view = View.findDrawableById("HelpText"); 
+        view.setText("hold to view list\ntap to store");
         View.onUpdate(dc);
     }
 }
@@ -71,15 +73,16 @@ class StartScreenInputDelegate extends WatchUi.InputDelegate {
     }
 
     function onTap(clickEvent) {
-        var sub = $.formatDate(Application.getApp().now);
+        var t = $.formatTime(Application.getApp().now);
+        //var d = $.formatDate(Application.getApp().now);
         var cnames = $.categories.keys();
 
         // create menu to select category (color) for the timestamp
-        var menu = new WatchUi.Menu2({:title=>"Select Category"});
+        var menu = new WatchUi.Menu2({:title=>"Select Color"});
         for( var i = 0; i < cnames.size(); i++ ) {
             var c = cnames[i];
             var color = $.categories[c];
-            menu.addItem(new WatchUi.IconMenuItem( c, sub, c, new $.Fill(color), null) );
+            menu.addItem(new WatchUi.IconMenuItem( t, c, c, new $.Fill(color), null) );
         }
 
         WatchUi.pushView(menu, new $.CategorySelectionDelegate(), WatchUi.SLIDE_LEFT);
